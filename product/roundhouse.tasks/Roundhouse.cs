@@ -133,6 +133,8 @@
         public bool SearchAllSubdirectoriesInsteadOfTraverse { get; set; }
 
         public bool DisableOutput { get; set; }
+        
+        public bool NormalizeOutputFiles { get; set; }
 
         #endregion
 

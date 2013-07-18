@@ -28,6 +28,7 @@ namespace roundhouse.runners
         private readonly bool use_simple_recovery;
         private readonly ConfigurationPropertyHolder configuration;
         private const string SQL_EXTENSION = "*.sql";
+        private int script_number = 1;
 
         public RoundhouseMigrationRunner(
             string repository_path,
@@ -308,8 +309,17 @@ namespace roundhouse.runners
         {
             if (!configuration.DisableOutput)
             {
-                string destination_file = file_system.combine_paths(known_folders.change_drop.folder_full_path, "itemsRan",
-                                                                    sql_file_ran.Replace(migration_folder.folder_path + "\\", string.Empty));
+                string destination_file;
+                if (configuration.NormalizeOutputFiles)
+                {
+                    destination_file = file_system.combine_paths(known_folders.change_drop.folder_full_path, "itemsRan", 
+                        string.Format("{0:00000} - ", script_number++) + file_system.get_file_name_from(sql_file_ran));
+                }
+                else
+                {
+                    destination_file = file_system.combine_paths(known_folders.change_drop.folder_full_path, "itemsRan",
+                                                                 sql_file_ran.Replace(migration_folder.folder_path + "\\", string.Empty));
+                }
                 file_system.verify_or_create_directory(file_system.get_directory_name_from(destination_file));
                 Log.bound_to(this).log_a_debug_event_containing("Copying file {0} to {1}.", file_system.get_file_name_from(sql_file_ran), destination_file);
                 file_system.file_copy_unsafe(sql_file_ran, destination_file, true);
